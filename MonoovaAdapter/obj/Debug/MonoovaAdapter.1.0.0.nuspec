@@ -11,8 +11,10 @@
     <icon>logo.png</icon>
     <projectUrl>https://www.monoova.com/</projectUrl>
     <description>This package used for Monoova Payments</description>
+    <releaseNotes>Version 1.0</releaseNotes>
     <copyright>SEACOW TECHNOLOGY PTY LTD</copyright>
     <tags>Monoova, Monoova API, Monoova Adapter</tags>
+    <repository type="git" url="https://github.com/cspangge/Monoova-Adapter" />
     <dependencies>
       <group targetFramework="net5.0">
         <dependency id="Newtonsoft.Json" version="9.0.1" exclude="Build,Analyzers" />

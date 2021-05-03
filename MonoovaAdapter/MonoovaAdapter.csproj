@@ -12,6 +12,9 @@
     <PackageTags>Monoova, Monoova API, Monoova Adapter</PackageTags>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <Summary>Monoova Adapter</Summary>
+    <RepositoryUrl>https://github.com/cspangge/Monoova-Adapter</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReleaseNotes>Version 1.0</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
