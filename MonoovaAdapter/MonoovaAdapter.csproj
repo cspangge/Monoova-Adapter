@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Title>Monoova Adapter</Title>
+    <Authors>Ran Tao</Authors>
+    <Description>This package used for Monoova Payments</Description>
+    <Copyright>SEACOW TECHNOLOGY PTY LTD</Copyright>
+    <PackageProjectUrl>https://www.monoova.com/</PackageProjectUrl>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageTags>Monoova, Monoova API, Monoova Adapter</PackageTags>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
+    <Summary>Monoova Adapter</Summary>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="license.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <None Include="logo.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+</Project>

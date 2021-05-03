@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>MonoovaAdapter</id>
+    <version>1.0.0</version>
+    <title>Monoova Adapter</title>
+    <authors>Ran Tao</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="file">license.txt</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <icon>logo.png</icon>
+    <projectUrl>https://www.monoova.com/</projectUrl>
+    <description>This package used for Monoova Payments</description>
+    <copyright>SEACOW TECHNOLOGY PTY LTD</copyright>
+    <tags>Monoova, Monoova API, Monoova Adapter</tags>
+    <dependencies>
+      <group targetFramework="net5.0">
+        <dependency id="Newtonsoft.Json" version="9.0.1" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\bin\Debug\net5.0\MonoovaAdapter.dll" target="lib\net5.0\MonoovaAdapter.dll" />
+    <file src="C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\license.txt" target="license.txt" />
+    <file src="C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\logo.png" target="logo.png" />
+  </files>
+</package>

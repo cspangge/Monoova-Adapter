@@ -1,0 +1,12 @@
+C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\bin\Debug\net5.0\MonoovaAdapter.deps.json
+C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\bin\Debug\net5.0\MonoovaAdapter.dll
+C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\bin\Debug\net5.0\ref\MonoovaAdapter.dll
+C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\bin\Debug\net5.0\MonoovaAdapter.pdb
+C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\obj\Debug\net5.0\MonoovaAdapter.csprojAssemblyReference.cache
+C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\obj\Debug\net5.0\MonoovaAdapter.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\obj\Debug\net5.0\MonoovaAdapter.AssemblyInfoInputs.cache
+C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\obj\Debug\net5.0\MonoovaAdapter.AssemblyInfo.cs
+C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\obj\Debug\net5.0\MonoovaAdapter.csproj.CoreCompileInputs.cache
+C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\obj\Debug\net5.0\MonoovaAdapter.dll
+C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\obj\Debug\net5.0\ref\MonoovaAdapter.dll
+C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\obj\Debug\net5.0\MonoovaAdapter.pdb
