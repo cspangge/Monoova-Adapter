@@ -22,8 +22,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\bin\Debug\net5.0\MonoovaAdapter.dll" target="lib\net5.0\MonoovaAdapter.dll" />
-    <file src="C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\license.txt" target="license.txt" />
-    <file src="C:\Users\Administrator\source\repos\MonoovaAdapter\MonoovaAdapter\logo.png" target="logo.png" />
+    <file src="K:\MonoovaAdapter\MonoovaAdapter\bin\Debug\net5.0\MonoovaAdapter.dll" target="lib\net5.0\MonoovaAdapter.dll" />
+    <file src="K:\MonoovaAdapter\MonoovaAdapter\license.txt" target="license.txt" />
+    <file src="K:\MonoovaAdapter\MonoovaAdapter\logo.png" target="logo.png" />
   </files>
 </package>

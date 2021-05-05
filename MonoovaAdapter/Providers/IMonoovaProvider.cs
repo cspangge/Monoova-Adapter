@@ -1,4 +1,5 @@
-﻿using MonoovaAdapter.Entities;
+﻿using System.Threading.Tasks;
+using MonoovaAdapter.Entities;
 using MonoovaAdapter.Entities.Automatcher;
 using MonoovaAdapter.Entities.BPAY;
 using MonoovaAdapter.Entities.Events;
@@ -317,6 +318,14 @@ namespace MonoovaAdapter.Providers
 
         // Update mWallet details
         UpdateMWalletDetailsResponse UpdateMWalletDetails(UpdateMWalletDetailsRequest request = null);
+        // -------------------------------------------------------------------------------------------------------------
+        
+        // -------------------------------------------------------------------------------------------------------------
+        PingResponse PublicPing();
+
+        Task<string> RetrieveX509Certificate();
+
+        string RetrievePublicKey();
         // -------------------------------------------------------------------------------------------------------------
     } 
 }

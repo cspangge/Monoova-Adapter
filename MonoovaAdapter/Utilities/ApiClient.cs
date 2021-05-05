@@ -1,35 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using MonoovaAdapter.Entities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace MonoovaAdapter.Utilities
 {
     class ApiClient
     {
-        private readonly ProviderParam param;
+        private readonly ProviderParam _param;
         public ApiClient(ProviderParam param)
         {
-            this.param = param;
+            this._param = param;
         }
 
         private string GetAuthorization()
         {
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(param.Username + ":" + param.Password);
+            var plainTextBytes = Encoding.UTF8.GetBytes(_param.Username + ":" + _param.Password);
             var authenticationValue = Convert.ToBase64String(plainTextBytes);
             return authenticationValue;
         }
 
         private HttpClient GetHttpClient()
         {
-            var client = new HttpClient { BaseAddress = new Uri(param.BaseUrl) };
+            var client = new HttpClient { BaseAddress = new Uri(_param.BaseUrl) };
             var authorization = this.GetAuthorization();
 
             client.DefaultRequestHeaders.Authorization =
@@ -41,7 +37,7 @@ namespace MonoovaAdapter.Utilities
             return client;
         }
 
-        private async Task<ResponseResult<T>> ResponseJson<T>(ResponseResult<T> result, Task<HttpResponseMessage> response)
+        private static async Task<ResponseResult<T>> ResponseJson<T>(ResponseResult<T> result, Task<HttpResponseMessage> response)
         {
             result.StatusCode = response.Result.StatusCode;
             var contents = await response.Result.Content.ReadAsStreamAsync();
@@ -62,6 +58,16 @@ namespace MonoovaAdapter.Utilities
             clientResponse.Wait();
             response = await ResponseJson(response, clientResponse);
             return response;
+        } 
+        
+        public async Task<Stream> GetFile<T>(string url)
+        {
+            var client = new HttpClient();
+            var response = client.GetAsync(_param.BaseUrl + url);
+            response.Wait();
+            Console.WriteLine(response.Result.Content.Headers);
+            var stream = await response.Result.Content.ReadAsStreamAsync();
+            return stream;
         } 
         
         public async Task<ResponseResult<T>> Post<T>(string url, HttpContent content)

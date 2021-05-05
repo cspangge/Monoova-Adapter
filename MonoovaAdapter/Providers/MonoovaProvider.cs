@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
 using MonoovaAdapter.Entities;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading.Tasks;
 using MonoovaAdapter.Entities.Automatcher;
 using MonoovaAdapter.Entities.BPAY;
 using MonoovaAdapter.Entities.Events;
@@ -24,9 +27,9 @@ namespace MonoovaAdapter.Providers
 {
     public class MonoovaProvider : IMonoovaProvider
     {
-        private readonly ProviderParam param;
-        private readonly ApiClient apiClient;
-        private readonly JsonSerializerSettings settings;
+        private readonly ProviderParam _param;
+        private readonly ApiClient _apiClient;
+        private readonly JsonSerializerSettings _settings;
 
         private const string TokenUrl = "/token/v1";
         private const string SecurityUrl = "/security/v1";
@@ -41,12 +44,13 @@ namespace MonoovaAdapter.Providers
         private const string VerifyUrl = "/verify/v1";
         private const string BpayUrl = "/bpay/v1";
         private const string FinancialUrl = "/financial/v2";
+        private const string PublicUrl = "/public/v1";
 
         public MonoovaProvider(ProviderParam param)
         {
-            this.param = param;
-            apiClient = new ApiClient(param);
-            settings = new JsonSerializerSettings
+            _param = param;
+            _apiClient = new ApiClient(param);
+            _settings = new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 MissingMemberHandling = MissingMemberHandling.Ignore
@@ -55,7 +59,7 @@ namespace MonoovaAdapter.Providers
 
         public ProviderParam GetProviderParam()
         {
-            return this.param;
+            return _param;
         }
 
 
@@ -66,9 +70,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(FinancialUrl + "/transaction/execute",
+            var response = _apiClient.Post<string>(FinancialUrl + "/transaction/execute",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<TransactionResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<TransactionResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -78,9 +82,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(FinancialUrl + "/transaction/validate",
+            var response = _apiClient.Post<string>(FinancialUrl + "/transaction/validate",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<TransactionResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<TransactionResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -89,8 +93,8 @@ namespace MonoovaAdapter.Providers
         public GetTransactionResponse GetTransactionByUid(GetTransactionRequest request)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(FinancialUrl + "/status/" + request.UniqueReference);
-            var result = JsonConvert.DeserializeObject<GetTransactionResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(FinancialUrl + "/status/" + request.UniqueReference);
+            var result = JsonConvert.DeserializeObject<GetTransactionResponse>(response.Result.ResponseText, _settings);
             return result;
         }
 
@@ -98,8 +102,8 @@ namespace MonoovaAdapter.Providers
         public GetTransactionByDateResponse GetTransactionByDate(GetTransactionByDateRequest request)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(FinancialUrl + "/status/" + request.StartDate + "/" + request.EndDate);
-            var result = JsonConvert.DeserializeObject<GetTransactionByDateResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(FinancialUrl + "/status/" + request.StartDate + "/" + request.EndDate);
+            var result = JsonConvert.DeserializeObject<GetTransactionByDateResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -109,9 +113,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(FinancialUrl + "/refund/execute",
+            var response = _apiClient.Post<string>(FinancialUrl + "/refund/execute",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<RefundResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<RefundResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -121,9 +125,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(FinancialUrl + "/refund/validate",
+            var response = _apiClient.Post<string>(FinancialUrl + "/refund/validate",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<RefundResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<RefundResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -135,8 +139,8 @@ namespace MonoovaAdapter.Providers
         public ValidateBpayTransactionResponse ValidateBpayTransaction(ValidateBpayTransactionRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(BpayUrl + "/validate/" + request.BillerCode + "?custRef=" + request.CustRef + "&amount=" + request.Amount);
-            var result = JsonConvert.DeserializeObject<ValidateBpayTransactionResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(BpayUrl + "/validate/" + request.BillerCode + "?custRef=" + request.CustRef + "&amount=" + request.Amount);
+            var result = JsonConvert.DeserializeObject<ValidateBpayTransactionResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -145,8 +149,8 @@ namespace MonoovaAdapter.Providers
         public GetBpayBillerCodeDetailsResponse GetBpayBillerCodeDetails(GetBpayBillerCodeDetailsRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(BpayUrl + "/biller/" + request.BillerCode);
-            var result = JsonConvert.DeserializeObject<GetBpayBillerCodeDetailsResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(BpayUrl + "/biller/" + request.BillerCode);
+            var result = JsonConvert.DeserializeObject<GetBpayBillerCodeDetailsResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -155,8 +159,8 @@ namespace MonoovaAdapter.Providers
         public SearchBpayBillersResponse SearchBpayBillers(SearchBpayBillersRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(BpayUrl + "/billers?search" + request.Search + "&skip=" + request.Skip + "&take=" + request.Take);
-            var result = JsonConvert.DeserializeObject<SearchBpayBillersResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(BpayUrl + "/billers?search" + request.Search + "&skip=" + request.Skip + "&take=" + request.Take);
+            var result = JsonConvert.DeserializeObject<SearchBpayBillersResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -165,8 +169,8 @@ namespace MonoovaAdapter.Providers
         public GetBpayHistoryResponse GetBpayHistory(GetBpayHistoryRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(BpayUrl + "/history/" + request.AccountNumber + "?take=" + request.Take);
-            var result = JsonConvert.DeserializeObject<GetBpayHistoryResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(BpayUrl + "/history/" + request.AccountNumber + "?take=" + request.Take);
+            var result = JsonConvert.DeserializeObject<GetBpayHistoryResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -175,7 +179,7 @@ namespace MonoovaAdapter.Providers
         public string BpayReceivablesReport(BpayReceivablesReportRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(BpayUrl + "/bpayInReport/" + request.Date + "?skip=" + request.Skip + "&take=" + request.Take);
+            var response = _apiClient.Get<string>(BpayUrl + "/bpayInReport/" + request.Date + "?skip=" + request.Skip + "&take=" + request.Take);
             return response.Result.ResponseText;
         }
         // -------------------------------------------------------------------------------------------------------------
@@ -188,9 +192,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>("/verify/v2/aba/initiate",
+            var response = _apiClient.Post<string>("/verify/v2/aba/initiate",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<InitiateResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<InitiateResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -200,9 +204,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(VerifyUrl + "/aba/initiate",
+            var response = _apiClient.Post<string>(VerifyUrl + "/aba/initiate",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<InitiateV1Response>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<InitiateV1Response>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -212,9 +216,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(VerifyUrl + "/aba/update",
+            var response = _apiClient.Post<string>(VerifyUrl + "/aba/update",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<CompleteVerificationResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<CompleteVerificationResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -223,8 +227,8 @@ namespace MonoovaAdapter.Providers
         public GetVerificationDetailResponse GetVerificationDetail(GetVerificationDetailRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(VerifyUrl + "/aba/get/" + request.Token);
-            var result = JsonConvert.DeserializeObject<GetVerificationDetailResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(VerifyUrl + "/aba/get/" + request.Token);
+            var result = JsonConvert.DeserializeObject<GetVerificationDetailResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -232,8 +236,8 @@ namespace MonoovaAdapter.Providers
         // List verified bank accounts
         public ListVerifiedBackAccResponse ListVerifiedBackAcc()
         {
-            var response = apiClient.Get<string>(VerifyUrl + "/aba/list");
-            var result = JsonConvert.DeserializeObject<ListVerifiedBackAccResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(VerifyUrl + "/aba/list");
+            var result = JsonConvert.DeserializeObject<ListVerifiedBackAccResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -243,9 +247,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(VerifyUrl + "/aba/update",
+            var response = _apiClient.Post<string>(VerifyUrl + "/aba/update",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<UpdateVerifiedAccountResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<UpdateVerifiedAccountResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -259,9 +263,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(AutomatcherUrl + "/create",
+            var response = _apiClient.Post<string>(AutomatcherUrl + "/create",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<CreateAutomatcherResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<CreateAutomatcherResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -271,9 +275,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(AutomatcherUrl + "/status",
+            var response = _apiClient.Post<string>(AutomatcherUrl + "/status",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<SetAccountStatusResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<SetAccountStatusResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -283,8 +287,8 @@ namespace MonoovaAdapter.Providers
             GetAccountStatusByBankAccountRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(AutomatcherUrl + "/statusByBankAccount/" + request.BankAccountNumber);
-            var result = JsonConvert.DeserializeObject<GetAccountStatusByBankAccountResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(AutomatcherUrl + "/statusByBankAccount/" + request.BankAccountNumber);
+            var result = JsonConvert.DeserializeObject<GetAccountStatusByBankAccountResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -294,8 +298,8 @@ namespace MonoovaAdapter.Providers
             GetAccountStatusByClientUniqueIdRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(AutomatcherUrl + "/statusByClientID/" + request.ClientUniqueId);
-            var result = JsonConvert.DeserializeObject<GetAccountStatusByClientUniqueIdResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(AutomatcherUrl + "/statusByClientID/" + request.ClientUniqueId);
+            var result = JsonConvert.DeserializeObject<GetAccountStatusByClientUniqueIdResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -304,7 +308,7 @@ namespace MonoovaAdapter.Providers
         public string Report(ReportRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(
+            var response = _apiClient.Get<string>(
                 "/receivables/v5/report/" + request.Date + 
                 "?endDate=" + request.EndDate + 
                 "&skip" + request.Skip + 
@@ -323,8 +327,8 @@ namespace MonoovaAdapter.Providers
         // Last Settlement
         public LastSettlementResponse LastSettlement()
         {
-            var response = apiClient.Get<string>(AutomatcherUrl + "/reportLastSettlement");
-            var result = JsonConvert.DeserializeObject<LastSettlementResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(AutomatcherUrl + "/reportLastSettlement");
+            var result = JsonConvert.DeserializeObject<LastSettlementResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -332,8 +336,8 @@ namespace MonoovaAdapter.Providers
         // List Accounts
         public ListAccountsResponse ListAccounts()
         {
-            var response = apiClient.Get<string>(AutomatcherUrl + "/listAccounts");
-            var result = JsonConvert.DeserializeObject<ListAccountsResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(AutomatcherUrl + "/listAccounts");
+            var result = JsonConvert.DeserializeObject<ListAccountsResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -342,9 +346,9 @@ namespace MonoovaAdapter.Providers
         public BatchCreateResponse BatchCreate(BatchCreateRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.PostBatch<string>(AutomatcherUrl + "/batchCreate",
+            var response = _apiClient.PostBatch<string>(AutomatcherUrl + "/batchCreate",
                 new ByteArrayContent(request.Content));
-            var result = JsonConvert.DeserializeObject<BatchCreateResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<BatchCreateResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -353,9 +357,9 @@ namespace MonoovaAdapter.Providers
         public BatchStatusResponse BatchStatus(BatchStatusRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.PostBatch<string>(AutomatcherUrl + "/batchStatus",
+            var response = _apiClient.PostBatch<string>(AutomatcherUrl + "/batchStatus",
                 new ByteArrayContent(request.Content));
-            var result = JsonConvert.DeserializeObject<BatchStatusResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<BatchStatusResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -365,9 +369,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(AutomatcherUrl + "/refund",
+            var response = _apiClient.Post<string>(AutomatcherUrl + "/refund",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<ReceivablesRefundResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<ReceivablesRefundResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -377,9 +381,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(AutomatcherUrl + "/processdirectdebit",
+            var response = _apiClient.Post<string>(AutomatcherUrl + "/processdirectdebit",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<ProcessDirectDebitResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<ProcessDirectDebitResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -388,7 +392,7 @@ namespace MonoovaAdapter.Providers
         public string InboundDirectDebitReport(InboundDirectDebitReportRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(AutomatcherUrl + "/list/" + request.Date);
+            var response = _apiClient.Get<string>(AutomatcherUrl + "/list/" + request.Date);
             return response.Result.ResponseText;
         }
         // -------------------------------------------------------------------------------------------------------------
@@ -401,9 +405,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(WhitelistingUrl + "/create",
+            var response = _apiClient.Post<string>(WhitelistingUrl + "/create",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<CreateWhitelistResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<CreateWhitelistResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -413,9 +417,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(WhitelistingUrl + "/update",
+            var response = _apiClient.Post<string>(WhitelistingUrl + "/update",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<UpdateWhitelistResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<UpdateWhitelistResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -424,8 +428,8 @@ namespace MonoovaAdapter.Providers
         public ListWhitelistResponse ListWhitelist(ListWhitelistRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(WhitelistingUrl + "/list/" + request.AutomatcherBankAccountNumber);
-            var result = JsonConvert.DeserializeObject<ListWhitelistResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(WhitelistingUrl + "/list/" + request.AutomatcherBankAccountNumber);
+            var result = JsonConvert.DeserializeObject<ListWhitelistResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -435,7 +439,7 @@ namespace MonoovaAdapter.Providers
             RejectedTransactionsReportRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(WhitelistingUrl + "/rejectedTransactions/" + request.Date);
+            var response = _apiClient.Get<string>(WhitelistingUrl + "/rejectedTransactions/" + request.Date);
             return response.Result.ResponseText;
         }
         // -------------------------------------------------------------------------------------------------------------
@@ -448,9 +452,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(PayIdUrl + "/registerPayId",
+            var response = _apiClient.Post<string>(PayIdUrl + "/registerPayId",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<RegisterPayIdResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<RegisterPayIdResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -460,9 +464,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(PayIdUrl + "/updatePayIdStatus",
+            var response = _apiClient.Post<string>(PayIdUrl + "/updatePayIdStatus",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<UpdatePayIdStatusResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<UpdatePayIdStatusResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -472,9 +476,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(PayIdUrl + "/updatePayIdName",
+            var response = _apiClient.Post<string>(PayIdUrl + "/updatePayIdName",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<UpdatePayIdNameResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<UpdatePayIdNameResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -484,9 +488,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(PayIdUrl + "/payIdEnquiry",
+            var response = _apiClient.Post<string>(PayIdUrl + "/payIdEnquiry",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<PayIdEnquiryResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<PayIdEnquiryResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -497,8 +501,8 @@ namespace MonoovaAdapter.Providers
         // Ping (test authentication)
         public PingResponse Ping()
         {
-            var response = apiClient.Get<string>(ToolsUrl + "/ping");
-            var result = JsonConvert.DeserializeObject<PingResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(ToolsUrl + "/ping");
+            var result = JsonConvert.DeserializeObject<PingResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -507,8 +511,8 @@ namespace MonoovaAdapter.Providers
         public ValidateBsbResponse ValidateBsb(ValidateBsbRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(ToolsUrl + "/bsbValidate/" + request.BsbNumber);
-            var result = JsonConvert.DeserializeObject<ValidateBsbResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(ToolsUrl + "/bsbValidate/" + request.BsbNumber);
+            var result = JsonConvert.DeserializeObject<ValidateBsbResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -517,8 +521,8 @@ namespace MonoovaAdapter.Providers
         public ValidateAbnResponse ValidateAbn(ValidateAbnRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(ToolsUrl + "/abnValidate/" + request.AbnNumber);
-            var result = JsonConvert.DeserializeObject<ValidateAbnResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(ToolsUrl + "/abnValidate/" + request.AbnNumber);
+            var result = JsonConvert.DeserializeObject<ValidateAbnResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -528,9 +532,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(ToolsUrl + "/sendEmailToIssuer",
+            var response = _apiClient.Post<string>(ToolsUrl + "/sendEmailToIssuer",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<EmailIssuerResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<EmailIssuerResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -545,9 +549,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(SubscriptionsUrl + "/create",
+            var response = _apiClient.Post<string>(SubscriptionsUrl + "/create",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<SubscribeWebhookResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<SubscribeWebhookResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -557,9 +561,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(SubscriptionsUrl + "/update",
+            var response = _apiClient.Post<string>(SubscriptionsUrl + "/update",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<UpdateWebhookResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<UpdateWebhookResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -567,8 +571,8 @@ namespace MonoovaAdapter.Providers
         // List all existing webhooks
         public ListAllWebhooksResponse ListAllWebhooks()
         {
-            var response = apiClient.Get<string>(SubscriptionsUrl + "/list");
-            var result = JsonConvert.DeserializeObject<ListAllWebhooksResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(SubscriptionsUrl + "/list");
+            var result = JsonConvert.DeserializeObject<ListAllWebhooksResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -578,8 +582,8 @@ namespace MonoovaAdapter.Providers
             UnsubscribeFromExistingWebhookRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Delete<string>(SubscriptionsUrl + "/delete/" + request.Id);
-            var result = JsonConvert.DeserializeObject<UnsubscribeFromExistingWebhookResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Delete<string>(SubscriptionsUrl + "/delete/" + request.Id);
+            var result = JsonConvert.DeserializeObject<UnsubscribeFromExistingWebhookResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -590,9 +594,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(SubscriptionsUrl + "/resend",
+            var response = _apiClient.Post<string>(SubscriptionsUrl + "/resend",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<RequestResendingNotificationUsingTransactionIdResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<RequestResendingNotificationUsingTransactionIdResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -637,9 +641,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(MAccountUrl + "/create",
+            var response = _apiClient.Post<string>(MAccountUrl + "/create",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<CreateMAccountResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<CreateMAccountResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -648,8 +652,8 @@ namespace MonoovaAdapter.Providers
         public CloseMAccountResponse CloseMAccount(CloseMAccountRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(MAccountUrl + "/close/" + request.AccountNumber);
-            var result = JsonConvert.DeserializeObject<CloseMAccountResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(MAccountUrl + "/close/" + request.AccountNumber);
+            var result = JsonConvert.DeserializeObject<CloseMAccountResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -658,8 +662,8 @@ namespace MonoovaAdapter.Providers
         public MAccountBalanceResponse GetMAccountBalance(MAccountBalanceRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(MAccountUrl + "/financials/" + request.AccountNumber);
-            var result = JsonConvert.DeserializeObject<MAccountBalanceResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(MAccountUrl + "/financials/" + request.AccountNumber);
+            var result = JsonConvert.DeserializeObject<MAccountBalanceResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -668,8 +672,8 @@ namespace MonoovaAdapter.Providers
         public GetMAccountDetailsResponse GetMAccountDetails(GetMAccountDetailsRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(MAccountUrl + "/get/" + request.AccountNumber);
-            var result = JsonConvert.DeserializeObject<GetMAccountDetailsResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(MAccountUrl + "/get/" + request.AccountNumber);
+            var result = JsonConvert.DeserializeObject<GetMAccountDetailsResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -677,8 +681,8 @@ namespace MonoovaAdapter.Providers
         // List as issuer
         public ListIssuerResponse ListIssuer()
         {
-            var response = apiClient.Get<string>(MAccountUrl + "/listAsIssuer");
-            var result = JsonConvert.DeserializeObject<ListIssuerResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(MAccountUrl + "/listAsIssuer");
+            var result = JsonConvert.DeserializeObject<ListIssuerResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -688,9 +692,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(MAccountUrl + "/sendStatement",
+            var response = _apiClient.Post<string>(MAccountUrl + "/sendStatement",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<SendStatementResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<SendStatementResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -701,9 +705,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(MAccountUrl + "/transactions",
+            var response = _apiClient.Post<string>(MAccountUrl + "/transactions",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<GetTransactionsByMAccountResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<GetTransactionsByMAccountResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -713,9 +717,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(MAccountUrl + "/update",
+            var response = _apiClient.Post<string>(MAccountUrl + "/update",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<UpdateMAccountDetailsResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<UpdateMAccountDetailsResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -729,8 +733,8 @@ namespace MonoovaAdapter.Providers
             GetAllTransactionsInDailySettlementRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(ReportsUrl + "/settlement/" + request.Date);
-            var result = JsonConvert.DeserializeObject<GetAllTransactionsInDailySettlementResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(ReportsUrl + "/settlement/" + request.Date);
+            var result = JsonConvert.DeserializeObject<GetAllTransactionsInDailySettlementResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -740,8 +744,8 @@ namespace MonoovaAdapter.Providers
             GetAllSuccessfulTransactionsByDateRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(ReportsUrl + "/statement/" + request.Date);
-            var result = JsonConvert.DeserializeObject<GetAllSuccessfulTransactionsByDateResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(ReportsUrl + "/statement/" + request.Date);
+            var result = JsonConvert.DeserializeObject<GetAllSuccessfulTransactionsByDateResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -755,8 +759,8 @@ namespace MonoovaAdapter.Providers
             CreateOneShotSecurityTokenRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(SecurityUrl + "/createOneShotSecurityToken/" + request.TimeOutMin + "/" + request.TokenClaims);
-            var result = JsonConvert.DeserializeObject<CreateOneShotSecurityTokenResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(SecurityUrl + "/createOneShotSecurityToken/" + request.TimeOutMin + "/" + request.TokenClaims);
+            var result = JsonConvert.DeserializeObject<CreateOneShotSecurityTokenResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -764,8 +768,8 @@ namespace MonoovaAdapter.Providers
         // Get Sign-in account fees & permissions
         public GetSignInAccountFeesAndPermissionsResponse GetSignInAccountFeesAndPermissions()
         {
-            var response = apiClient.Get<string>(SecurityUrl + "/signInAccountSettings");
-            var result = JsonConvert.DeserializeObject<GetSignInAccountFeesAndPermissionsResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(SecurityUrl + "/signInAccountSettings");
+            var result = JsonConvert.DeserializeObject<GetSignInAccountFeesAndPermissionsResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -779,9 +783,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(TokenUrl + "/createAustralianBankAccount",
+            var response = _apiClient.Post<string>(TokenUrl + "/createAustralianBankAccount",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<CreateBankAccountTokenResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<CreateBankAccountTokenResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -791,9 +795,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(TokenUrl + "/createBPAY",
+            var response = _apiClient.Post<string>(TokenUrl + "/createBPAY",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<CreateBpayTokenResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<CreateBpayTokenResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -802,8 +806,8 @@ namespace MonoovaAdapter.Providers
         public DeleteTokenResponse DeleteToken(DeleteTokenRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Delete<string>(TokenUrl + "/delete/" + request.Token);
-            var result = JsonConvert.DeserializeObject<DeleteTokenResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Delete<string>(TokenUrl + "/delete/" + request.Token);
+            var result = JsonConvert.DeserializeObject<DeleteTokenResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -812,8 +816,8 @@ namespace MonoovaAdapter.Providers
         public GetTokenDetailsResponse GetTokenDetails(GetTokenDetailsRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(TokenUrl + "/get/" + request.Token);
-            var result = JsonConvert.DeserializeObject<GetTokenDetailsResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(TokenUrl + "/get/" + request.Token);
+            var result = JsonConvert.DeserializeObject<GetTokenDetailsResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -822,8 +826,8 @@ namespace MonoovaAdapter.Providers
         public ListTokensByMAccountResponse ListTokensByMAccount(ListTokensByMAccountRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(TokenUrl + "/list/" + request.AccountNumber);
-            var result = JsonConvert.DeserializeObject<ListTokensByMAccountResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(TokenUrl + "/list/" + request.AccountNumber);
+            var result = JsonConvert.DeserializeObject<ListTokensByMAccountResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -833,9 +837,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(TokenUrl + "/updateAustralianBankAccount",
+            var response = _apiClient.Post<string>(TokenUrl + "/updateAustralianBankAccount",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<UpdateBankAccountTokenResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<UpdateBankAccountTokenResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -845,9 +849,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(TokenUrl + "/updateBPAY",
+            var response = _apiClient.Post<string>(TokenUrl + "/updateBPAY",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<UpdateBpayTokenResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<UpdateBpayTokenResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -856,8 +860,8 @@ namespace MonoovaAdapter.Providers
         public ValidateTokenResponse ValidateToken(ValidateTokenRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(TokenUrl + "/validate/" + request.Token);
-            var result = JsonConvert.DeserializeObject<ValidateTokenResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(TokenUrl + "/validate/" + request.Token);
+            var result = JsonConvert.DeserializeObject<ValidateTokenResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -871,9 +875,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(MWalletUrl + "/create",
+            var response = _apiClient.Post<string>(MWalletUrl + "/create",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<CreateMWalletResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<CreateMWalletResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -882,8 +886,8 @@ namespace MonoovaAdapter.Providers
         public CloseMWalletResponse CloseMWallet(CloseMWalletRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(MWalletUrl + "/close/" + request.AccountNumber + "/" + request.Pin);
-            var result = JsonConvert.DeserializeObject<CloseMWalletResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(MWalletUrl + "/close/" + request.AccountNumber + "/" + request.Pin);
+            var result = JsonConvert.DeserializeObject<CloseMWalletResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -892,8 +896,8 @@ namespace MonoovaAdapter.Providers
         public GetMWalletBalanceResponse GetMWalletBalance(GetMWalletBalanceRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(MWalletUrl + "/financials/" + request.AccountNumber + "/" + request.Pin);
-            var result = JsonConvert.DeserializeObject<GetMWalletBalanceResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(MWalletUrl + "/financials/" + request.AccountNumber + "/" + request.Pin);
+            var result = JsonConvert.DeserializeObject<GetMWalletBalanceResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -902,8 +906,8 @@ namespace MonoovaAdapter.Providers
         public ReopenClosedMWalletResponse ReopenClosedMWallet(ReopenClosedMWalletRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(MWalletUrl + "/reopen/" + request.AccountNumber + "/" + request.Pin);
-            var result = JsonConvert.DeserializeObject<ReopenClosedMWalletResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(MWalletUrl + "/reopen/" + request.AccountNumber + "/" + request.Pin);
+            var result = JsonConvert.DeserializeObject<ReopenClosedMWalletResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -913,9 +917,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(MWalletUrl + "/resetPin",
+            var response = _apiClient.Post<string>(MWalletUrl + "/resetPin",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<ResetMWalletPinResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<ResetMWalletPinResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -924,8 +928,8 @@ namespace MonoovaAdapter.Providers
         public MWalletSearchResponse MWalletSearch(MWalletSearchRequest request = null)
         {
             if (request == null) return null;
-            var response = apiClient.Get<string>(MWalletUrl + "/search?identifier=" + request.Identifier);
-            var result = JsonConvert.DeserializeObject<MWalletSearchResponse>(response.Result.ResponseText, settings);
+            var response = _apiClient.Get<string>(MWalletUrl + "/search?identifier=" + request.Identifier);
+            var result = JsonConvert.DeserializeObject<MWalletSearchResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
 
@@ -936,9 +940,9 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(MWalletUrl + "/transactions",
+            var response = _apiClient.Post<string>(MWalletUrl + "/transactions",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<GetTransactionsByMWalletResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<GetTransactionsByMWalletResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
         }
@@ -948,11 +952,69 @@ namespace MonoovaAdapter.Providers
         {
             if (request == null) return null;
             var json = JsonConvert.SerializeObject(request);
-            var response = apiClient.Post<string>(MWalletUrl + "/update",
+            var response = _apiClient.Post<string>(MWalletUrl + "/update",
                 new StringContent(json, Encoding.UTF8, "application/json"));
-            var result = JsonConvert.DeserializeObject<UpdateMWalletDetailsResponse>(response.Result.ResponseText, settings);
+            var result = JsonConvert.DeserializeObject<UpdateMWalletDetailsResponse>(response.Result.ResponseText, _settings);
             PrintObj.Print(result);
             return result;
+        }
+        // -------------------------------------------------------------------------------------------------------------
+        
+        // -------------------------------------------------------------------------------------------------------------
+        public PingResponse PublicPing()
+        {
+            var response = _apiClient.Get<string>(PublicUrl + "/ping");
+            var result = JsonConvert.DeserializeObject<PingResponse>(response.Result.ResponseText, _settings);
+            PrintObj.Print(result);
+            return result;
+        }
+
+        public async Task<string> RetrieveX509Certificate()
+        {
+            var response = _apiClient.GetFile<string>(PublicUrl + "/certificate");
+
+            // using var stream = new StreamReader(response.Result);
+            // var fileStream = File.Create("sample.cer");
+            // await response.Result.CopyToAsync(fileStream);
+            // await fileStream.DisposeAsync();
+            // Console.WriteLine(fileStream.Name);
+            // Console.WriteLine(fileStream.Length);
+            // Console.WriteLine(fileStream.Position);
+            //This allows you to do one Read operation.
+            // Console.WriteLine(await stream.ReadToEndAsync());
+            // Load the certificate into an X509Certificate object.
+            var x509 = new X509Certificate2();
+            x509.Import("sample.cer");
+            // // Get the value.
+            // //Print to console information contained in the certificate.
+            Console.WriteLine("{0}Subject: {1}{0}", Environment.NewLine, x509.Subject);
+            Console.WriteLine("{0}Issuer: {1}{0}", Environment.NewLine, x509.Issuer);
+            Console.WriteLine("{0}Version: {1}{0}", Environment.NewLine, x509.Version);
+            Console.WriteLine("{0}Valid Date: {1}{0}", Environment.NewLine, x509.NotBefore);
+            Console.WriteLine("{0}Expiry Date: {1}{0}", Environment.NewLine, x509.NotAfter);
+            Console.WriteLine("{0}Thumbprint: {1}{0}", Environment.NewLine, x509.Thumbprint);
+            Console.WriteLine("{0}Serial Number: {1}{0}", Environment.NewLine, x509.SerialNumber);
+            Console.WriteLine("{0}Friendly Name: {1}{0}", Environment.NewLine, x509.PublicKey.Oid.FriendlyName);
+            Console.WriteLine("{0}Public Key Format: {1}{0}", Environment.NewLine, x509.PublicKey.EncodedKeyValue.Format(true));
+            Console.WriteLine("{0}Raw Data Length: {1}{0}", Environment.NewLine, x509.RawData.Length);
+            Console.WriteLine("{0}Certificate to string: {1}{0}", Environment.NewLine, x509.ToString(true));
+            Console.WriteLine("{0}Certificate to XML String: {1}{0}", Environment.NewLine, x509.PublicKey.Key.ToXmlString(false));
+
+            //
+            // //Add the certificate to a X509Store.
+            // var store = new X509Store();
+            // store.Open(OpenFlags.MaxAllowed);
+            // store.Add(x509);
+            // store.Close();
+            // return x509.ToString(true);
+            return "";
+        }
+
+        public string RetrievePublicKey()
+        {
+            var response = _apiClient.Get<string>(PublicUrl + "/certificate/public-key");
+            Console.WriteLine(response.Result.ResponseText);
+            return response.Result.ResponseText;
         }
         // -------------------------------------------------------------------------------------------------------------
     }
