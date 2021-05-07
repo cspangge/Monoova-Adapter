@@ -1,8 +1,23 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:Boolean x:Key="/Default/Environment/Hierarchy/EntityFrameworkOptions/IsAlreadyNotifiedAboutEntityFramework/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=94553267_002De46d_002D469b_002Daefd_002D5629fc89484e/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestPing" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestPing&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestPublicPing&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestRetrieveX509Certificate&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestMAccountBalance&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestRetrievePublicKey&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestValidateTransaction&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestProcessTransaction&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestGetTransactionByUis&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestGetTransactionByDate&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestGetTransactionByUid&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestLastSettlement&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestSetAccountStatus&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestGetAccountStatusByClientUniqueId&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestReport&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestCreateMAccount&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestGetAccountStatusByBankAccount&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::26E1DC90-BCD9-4AC7-886B-3852D2994C90::net5.0::MonoovaAdapterTest.UnitTest1.TestSubscribeWebhook&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

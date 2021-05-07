@@ -62,7 +62,6 @@ namespace MonoovaAdapter.Providers
             return _param;
         }
 
-
         // Receive and Pay
         // Financial / Payments
         // Process a transaction
@@ -95,6 +94,7 @@ namespace MonoovaAdapter.Providers
             if (request == null) return null;
             var response = _apiClient.Get<string>(FinancialUrl + "/status/" + request.UniqueReference);
             var result = JsonConvert.DeserializeObject<GetTransactionResponse>(response.Result.ResponseText, _settings);
+            PrintObj.Print(result);
             return result;
         }
 
@@ -968,48 +968,7 @@ namespace MonoovaAdapter.Providers
             PrintObj.Print(result);
             return result;
         }
-
-        public async Task<string> RetrieveX509Certificate()
-        {
-            var response = _apiClient.GetFile<string>(PublicUrl + "/certificate");
-
-            // using var stream = new StreamReader(response.Result);
-            // var fileStream = File.Create("sample.cer");
-            // await response.Result.CopyToAsync(fileStream);
-            // await fileStream.DisposeAsync();
-            // Console.WriteLine(fileStream.Name);
-            // Console.WriteLine(fileStream.Length);
-            // Console.WriteLine(fileStream.Position);
-            //This allows you to do one Read operation.
-            // Console.WriteLine(await stream.ReadToEndAsync());
-            // Load the certificate into an X509Certificate object.
-            var x509 = new X509Certificate2();
-            x509.Import("sample.cer");
-            // // Get the value.
-            // //Print to console information contained in the certificate.
-            Console.WriteLine("{0}Subject: {1}{0}", Environment.NewLine, x509.Subject);
-            Console.WriteLine("{0}Issuer: {1}{0}", Environment.NewLine, x509.Issuer);
-            Console.WriteLine("{0}Version: {1}{0}", Environment.NewLine, x509.Version);
-            Console.WriteLine("{0}Valid Date: {1}{0}", Environment.NewLine, x509.NotBefore);
-            Console.WriteLine("{0}Expiry Date: {1}{0}", Environment.NewLine, x509.NotAfter);
-            Console.WriteLine("{0}Thumbprint: {1}{0}", Environment.NewLine, x509.Thumbprint);
-            Console.WriteLine("{0}Serial Number: {1}{0}", Environment.NewLine, x509.SerialNumber);
-            Console.WriteLine("{0}Friendly Name: {1}{0}", Environment.NewLine, x509.PublicKey.Oid.FriendlyName);
-            Console.WriteLine("{0}Public Key Format: {1}{0}", Environment.NewLine, x509.PublicKey.EncodedKeyValue.Format(true));
-            Console.WriteLine("{0}Raw Data Length: {1}{0}", Environment.NewLine, x509.RawData.Length);
-            Console.WriteLine("{0}Certificate to string: {1}{0}", Environment.NewLine, x509.ToString(true));
-            Console.WriteLine("{0}Certificate to XML String: {1}{0}", Environment.NewLine, x509.PublicKey.Key.ToXmlString(false));
-
-            //
-            // //Add the certificate to a X509Store.
-            // var store = new X509Store();
-            // store.Open(OpenFlags.MaxAllowed);
-            // store.Add(x509);
-            // store.Close();
-            // return x509.ToString(true);
-            return "";
-        }
-
+        
         public string RetrievePublicKey()
         {
             var response = _apiClient.Get<string>(PublicUrl + "/certificate/public-key");

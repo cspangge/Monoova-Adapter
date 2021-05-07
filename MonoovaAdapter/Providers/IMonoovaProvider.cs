@@ -15,6 +15,7 @@ using MonoovaAdapter.Entities.Transaction;
 using MonoovaAdapter.Entities.Transaction.Dto;
 using MonoovaAdapter.Entities.Verify;
 using MonoovaAdapter.Entities.Whitelisting;
+using MonoovaAdapter.Utilities;
 
 namespace MonoovaAdapter.Providers
 {
@@ -322,8 +323,6 @@ namespace MonoovaAdapter.Providers
         
         // -------------------------------------------------------------------------------------------------------------
         PingResponse PublicPing();
-
-        Task<string> RetrieveX509Certificate();
 
         string RetrievePublicKey();
         // -------------------------------------------------------------------------------------------------------------
